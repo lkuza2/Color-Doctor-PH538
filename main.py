@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function
 # TensorFlow and tf.keras
 import os
 
+
 import matplotlib.pyplot as plt
 # Helper libraries
 import numpy as np
@@ -13,6 +14,10 @@ from tensorflow.python.keras import Sequential
 from tensorflow.python.keras.callbacks import TensorBoard
 from tensorflow.python.keras.engine import InputLayer
 from tensorflow.python.keras.layers import Conv2D, UpSampling2D
+from tensorflow.python.keras.models import load_model
+from tensorflow.python.keras.models import save_model
+
+import h5py
 
 print(tf.__version__)
 
@@ -30,7 +35,7 @@ def main2():
     # Building the neural network
     model = Sequential()
     model.add(InputLayer(input_shape=(None, None, 1)))
-    model.add(Conv2D(8, (3, 3), activation='relu', padding='same', strides=2))
+    model.add(Conv2D(8, (3, 3), input_shape=(None, None, 1), activation='relu', padding='same', strides=2))
     model.add(Conv2D(8, (3, 3), activation='relu', padding='same'))
     model.add(Conv2D(16, (3, 3), activation='relu', padding='same'))
     model.add(Conv2D(16, (3, 3), activation='relu', padding='same', strides=2))
@@ -71,7 +76,7 @@ def main():
     # Design the neural network
     model = Sequential()
     model.add(InputLayer(input_shape=(None, None, 1)))
-    model.add(Conv2D(8, (3, 3), activation='relu', padding='same', strides=2))
+    model.add(Conv2D(8, (3, 3), input_shape=(None, None, 1), activation='relu', padding='same', strides=2))
     model.add(Conv2D(8, (3, 3), activation='relu', padding='same'))
     model.add(Conv2D(16, (3, 3), activation='relu', padding='same'))
     model.add(Conv2D(16, (3, 3), activation='relu', padding='same', strides=2))
@@ -117,7 +122,23 @@ def main():
     color_me = np.array(color_me, dtype=float)
     color_me = rgb2lab(1.0 / 255 * color_me)[:, :, :, 0]
     color_me = color_me.reshape(color_me.shape + (1,))
+    model.save('./result/network.h5')
+    del model
+
+def testNet(color_me):
     # Test model
+    
+    model = load_model('./result/network.h5')
+    
+    
+    color_me = []
+    for filename in os.listdir('./gray_images/Test/'):
+        color_me.append(img_to_array(load_img('./gray_images/Test/' + filename)))
+    color_me = np.array(color_me, dtype=float)
+    color_me = rgb2lab(1.0 / 255 * color_me)[:, :, :, 0]
+    color_me = color_me.reshape(color_me.shape + (1,))
+    
+    
     output = model.predict(color_me)
     output = output * 128
     # Output colorizations
@@ -129,4 +150,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    #main()
+    testNet('./gray_images/Test/gray_image7.png')
