@@ -22,7 +22,7 @@ print(tf.__version__)
 def main():
     print("Welcome to Color Doctor v1.00 by Gavin Karr and Luke Kuza")
     print('Usage: Put colored training images in "./color_images/Train"')
-    print('Put B&W images to colorize in "./gray_images/Test')
+    print('Put B&W images to colorize in "./gray_images/Test"')
     print("Searching for trained model...")
     if Path("./result/network.h5").is_file():
         result = input('network.h5 found! Use old model? Selecting "n" retrains the network (Y/n)')  # Python 3
@@ -30,6 +30,7 @@ def main():
             os.remove('./result/network.h5')
             train_net_prompt()
     else:
+        print('No network found, please enter parameters to train network.')
         train_net_prompt()
 
     print("Testing network...")
